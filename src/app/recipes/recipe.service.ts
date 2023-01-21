@@ -30,14 +30,18 @@ export class RecipeService {
 
     constructor(private shoppingListService: ShoppingListService){};
 
-      getRecipes() {
-        // Return a copy of the recipes
-        return this.recipes.slice();
-      }
+    getRecipe(index:number){
+      return this.recipes[index];
+    }
 
-      addIngredientsToShoppingList(ingredients: Ingredient[]) {
+    getRecipes() {
+      // Return a copy of the recipes
+      return this.recipes.slice();
+    }
 
-        this.shoppingListService.addIngredients(ingredients);
+    addIngredientsToShoppingList(ingredients: Ingredient[]) {
 
-      }
+      this.shoppingListService.addIngredients(ingredients);
+
+    }
 }
