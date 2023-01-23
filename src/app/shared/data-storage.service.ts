@@ -26,16 +26,9 @@ export class DataStorageService {
 
     fetchRecipes() {
 
-        // Only take one value from the response by using take() only once
-        // exhaustMap waits for the first observerable to complete getting the user
-        // than
-       return this.authService.user.pipe(
-            take(1),
-            exhaustMap(user=>{
-                return this.http.get<Recipe[]>(this.apiUrl,{
-                    params: new HttpParams().set('auth', user.token)
-                });
-            }),
+       return this.http
+        .get<Recipe[]>(this.apiUrl)
+        .pipe(
             map((recipes)=>{
                 return recipes.map((recipe)=>{
                     return {
@@ -48,5 +41,5 @@ export class DataStorageService {
                 this.recipeService.setRecipes(recipes);
             })
         );
-    }
+    };
 }
