@@ -9,7 +9,7 @@ export interface AuthResponseData {
     idToken: string;
     email: string;
     refreshToken: string;
-    expiresin: string;
+    expiresIn: string;
     localid: string;
     registered?: boolean;
 };
@@ -40,7 +40,7 @@ export class AuthService {
                     resData.email,
                     resData.localid,
                     resData.idToken,
-                    +resData.expiresin);
+                    +resData.expiresIn);
             }) );
 
     };
@@ -86,7 +86,7 @@ export class AuthService {
                     resData.email,
                     resData.localid,
                     resData.idToken,
-                    +resData.expiresin);
+                    +resData.expiresIn);
             }))
     };
 
@@ -106,10 +106,11 @@ export class AuthService {
 
         const user = new User(email, userId, token, expirationDate );
 
+        localStorage.setItem('userData', JSON.stringify(user));
+
         this.user.next(user);
         this.autoLogout(expiresIn * 1000);
 
-        localStorage.setItem('userData', JSON.stringify(user));
     };
 
     private handleError(errorRes: HttpErrorResponse){
