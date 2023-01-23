@@ -45,8 +45,10 @@ export class AuthComponent {
             this.error = errorMessage;
             this.isLoading = false;
         });
+    }
 
-
+    onHandleError() {
+        this.error = null;
     }
 
 }
