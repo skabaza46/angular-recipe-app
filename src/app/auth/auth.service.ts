@@ -17,6 +17,8 @@ export interface AuthResponseData {
 @Injectable()
 export class AuthService {
 
+    private tokenExpirationTimer: any;
+
     private apiKey: string = "AIzaSyCNLWOVjW30fxxc-IoYz-zqmjlrrr3sLMs";
     private signUpApiUrl: string = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.apiKey}`;
     private signinApiUrl: string = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.apiKey}`
@@ -58,9 +60,20 @@ export class AuthService {
 
         if (loadedUser.token) {
             this.user.next(loadedUser);
+
+            const expirationDuration = (
+                new Date(userData._tokenExpireationDate).getTime() - new Date().getTime()
+                );
+            this.autoLogout(expirationDuration);
         };
 
-    }
+    };
+
+    autoLogout(expirationDuration: number) {
+        this.tokenExpirationTimer = setTimeout(()=>{
+            this.logout();
+        }, expirationDuration)
+    };
 
     signin(email: string, password: string){
         return this.http.post<AuthResponseData>(this.signinApiUrl,
@@ -80,6 +93,12 @@ export class AuthService {
     logout() {
         this.user.next(null);
         this.router.navigate(['/auth']);
+        localStorage.removeItem("userData");
+
+        if (this.tokenExpirationTimer){
+            clearTimeout(this.tokenExpirationTimer);
+        };
+        this.tokenExpirationTimer = null;
     };
 
     private handleAuthentication(email: string, userId:string, token: string, expiresIn: number ) {
@@ -88,6 +107,7 @@ export class AuthService {
         const user = new User(email, userId, token, expirationDate );
 
         this.user.next(user);
+        this.autoLogout(expiresIn * 1000);
 
         localStorage.setItem('userData', JSON.stringify(user));
     };
